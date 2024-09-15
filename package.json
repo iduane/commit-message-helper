@@ -95,8 +95,5 @@
     "untrustedWorkspaces": {
       "supported": true
     }
-  },
-  "enabledApiProposals": [
-    "scmActionButton"
-  ]
+  }
 }
