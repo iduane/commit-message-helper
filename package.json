@@ -1,0 +1,102 @@
+{
+  "name": "commit-message-helper",
+  "displayName": "Commit Message Helper",
+  "description": "Generates commit messages using ChatGPT",
+  "version": "0.0.1",
+  "publisher": "iduane",
+  "icon": "LOGO.png",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/iduane/commit-message-helper.git"
+  },
+  "engines": {
+    "vscode": "^1.75.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./src/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "extension.generateCommitMessageSCM",
+        "title": "Generate Commit Message (SCM)",
+        "icon": {
+          "dark": "resources/commit-dark.svg",
+          "light": "resources/commit-light.svg"
+        }
+      }
+    ],
+    "menus": {
+      "scm/title": [
+        {
+          "command": "extension.generateCommitMessageSCM",
+          "when": "scmProvider == git || scmProvider == svn",
+          "group": "navigation",
+          "icon": "$(git-commit)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Commit Message Helper",
+      "properties": {
+        "commitMessageHelper.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "API key for OpenAI"
+        },
+        "commitMessageHelper.customPromptTemplatePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to a custom prompt template file"
+        },
+        "commitMessageHelper.baseUrl": {
+          "type": "string",
+          "default": "https://api.openai.com/v1",
+          "description": "Base URL for OpenAI API"
+        },
+        "commitMessageHelper.model": {
+          "type": "string",
+          "default": "gpt-4o-mini",
+          "description": "OpenAI model to use for generating commit messages"
+        },
+        "terminal.integrated.enablePersistentHistory": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable persistent terminal history"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint",
+    "test": "node ./test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.60.0",
+    "eslint": "^7.27.0",
+    "glob": "^7.1.7",
+    "mocha": "^8.4.0",
+    "typescript": "^4.3.2",
+    "vscode-test": "^1.5.2"
+  },
+  "dependencies": {
+    "openai": "^4.61.0"
+  },
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "enabledApiProposals": [
+    "scmActionButton"
+  ]
+}
