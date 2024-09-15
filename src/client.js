@@ -14,6 +14,8 @@ class ChatGPTClient {
         "API key not found. Please set it in the extension settings."
       );
     }
+
+    this.outputChannel = vscode.window.createOutputChannel("ChatGPT");
   }
 
   getAnswer(message) {
@@ -47,7 +49,11 @@ class ChatGPTClient {
           try {
             const jsonResponse = JSON.parse(responseData);
             if (jsonResponse.choices && jsonResponse.choices.length > 0) {
-              resolve(jsonResponse.choices[0].message.content.trim());
+              const content = jsonResponse.choices[0].message.content.trim();
+              this.outputChannel.appendLine("ChatGPT Response:");
+              this.outputChannel.appendLine(content);
+              // this.outputChannel.show();
+              resolve(content);
             } else {
               reject(new Error("No response from ChatGPT"));
             }

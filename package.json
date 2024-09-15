@@ -63,11 +63,6 @@
           "type": "string",
           "default": "gpt-4o-mini",
           "description": "OpenAI model to use for generating commit messages"
-        },
-        "terminal.integrated.enablePersistentHistory": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable persistent terminal history"
         }
       }
     }

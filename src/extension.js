@@ -117,17 +117,17 @@ async function generateCommitMessage({ useTerminal = false }) {
       async (progress) => {
         progress.report({ increment: 0 });
 
-        const messages = await getMessages(api, userMessage);
+        const message = await getMessage(api, userMessage);
         progress.report({ increment: 100 });
 
-        if (messages.length > 0) {
+        if (message.length > 0) {
           const vcs = await detectVCS(
             vscode.workspace.workspaceFolders[0].uri.fsPath
           );
 
           if (useTerminal || vcs === "svn") {
             const selectedMessageResult = await openTempFileWithMessage(
-              messages
+              message
             );
             if (selectedMessageResult && selectedMessageResult.result) {
               const terminal = vscode.window.createTerminal(
@@ -164,7 +164,7 @@ async function generateCommitMessage({ useTerminal = false }) {
             const gitApi = gitExtension.exports.getAPI(1);
             if (gitApi.repositories.length > 0) {
               const repository = gitApi.repositories[0];
-              repository.inputBox.value = messages.join("\n");
+              repository.inputBox.value = message;
             } else {
               vscode.window.showWarningMessage("No Git repositories found.");
             }
@@ -226,28 +226,22 @@ async function getDiff() {
   }
 }
 
-// Update the getMessages function to accept a progress callback
-async function getMessages(api, userMessage, progressCallback) {
+// Update the getMessage function to accept a progress callback
+async function getMessage(api, userMessage, progressCallback) {
   const response = await api.getAnswer(userMessage);
   if (progressCallback) {
     progressCallback({ increment: 50 });
   }
-  const messages = response
+  const message = response
     .split("\n")
     .map(normalizeMessage)
-    .filter((l) => l.length > 1);
+    .filter((l) => l.length > 1)
+    .join("\n");
 
-  return messages;
+  return message;
 }
 
-async function openTempFileWithMessage(messages) {
-  const suggestionSep = Array.from({ length: 72 })
-    .fill(null)
-    .map(() => "-")
-    .join("");
-
-  const message = messages.join("\n" + suggestionSep + "\n\n");
-
+async function openTempFileWithMessage(message) {
   const uid = randomUUID();
   const tempMessageFile = path.join(
     tmpdir(),
@@ -271,10 +265,7 @@ async function openTempFileWithMessage(messages) {
     saveHandler = vscode.workspace.onDidSaveTextDocument((doc) => {
       if (doc.fileName === tempMessageFile) {
         const editedText = doc.getText();
-        const editedMessage = editedText
-          .replace(/#.*#.*\n/g, "")
-          .split(suggestionSep)[0]
-          .trim();
+        const editedMessage = editedText.replace(/#.*#.*\n/g, "").trim();
 
         resolve({ result: true, edited: true, editedMessage });
       }
