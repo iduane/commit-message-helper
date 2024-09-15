@@ -2,7 +2,7 @@
   "name": "commit-message-helper",
   "displayName": "Commit Message Helper",
   "description": "Generates commit messages using ChatGPT",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "publisher": "iduane",
   "icon": "LOGO.png",
   "license": "MIT",

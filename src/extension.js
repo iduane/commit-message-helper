@@ -120,36 +120,37 @@ async function generateCommitMessage({ useTerminal = false }) {
         const messages = await getMessages(api, userMessage);
         progress.report({ increment: 100 });
 
-        const selectedMessageResult = await openTempFileWithMessage(messages);
-
-        if (selectedMessageResult && selectedMessageResult.result) {
+        if (messages.length > 0) {
           const vcs = await detectVCS(
             vscode.workspace.workspaceFolders[0].uri.fsPath
           );
 
           if (useTerminal || vcs === "svn") {
-            const terminal = vscode.window.createTerminal(
-              vcs === "svn" ? "SVN Commit" : "Git Commit"
+            const selectedMessageResult = await openTempFileWithMessage(
+              messages
             );
-            terminal.show();
+            if (selectedMessageResult && selectedMessageResult.result) {
+              const terminal = vscode.window.createTerminal(
+                vcs === "svn" ? "SVN Commit" : "Git Commit"
+              );
+              terminal.show();
 
-            // Escape the message for use in a shell command
-            const escapedMessage = selectedMessageResult.editedMessage.replace(
-              /"/g,
-              '\\"'
-            );
+              // Escape the message for use in a shell command
+              const escapedMessage =
+                selectedMessageResult.editedMessage.replace(/"/g, '\\"');
 
-            // Use SVN command line to set the commit message
-            terminal.sendText(
-              vcs === "svn"
-                ? `svn commit -m"${escapedMessage}"`
-                : `git commit -m"${escapedMessage}"`,
-              false
-            );
+              // Use SVN command line to set the commit message
+              terminal.sendText(
+                vcs === "svn"
+                  ? `svn commit -m"${escapedMessage}"`
+                  : `git commit -m"${escapedMessage}"`,
+                false
+              );
 
-            vscode.window.showInformationMessage(
-              "SVN commit message set. Please review and commit manually in the terminal."
-            );
+              vscode.window.showInformationMessage(
+                "SVN commit message set. Please review and commit manually in the terminal."
+              );
+            }
           } else if (vcs === "git") {
             const gitExtension = vscode.extensions.getExtension("vscode.git");
             if (!gitExtension) {
@@ -163,7 +164,7 @@ async function generateCommitMessage({ useTerminal = false }) {
             const gitApi = gitExtension.exports.getAPI(1);
             if (gitApi.repositories.length > 0) {
               const repository = gitApi.repositories[0];
-              repository.inputBox.value = selectedMessageResult.editedMessage;
+              repository.inputBox.value = messages.join("\n");
             } else {
               vscode.window.showWarningMessage("No Git repositories found.");
             }
