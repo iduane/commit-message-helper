@@ -11,6 +11,35 @@ const path = require("path");
 const { tmpdir } = require("os");
 const { randomUUID } = require("crypto");
 
+// Add this new function to check message length
+async function checkMessageLength(message, maxTokens = 8000) {
+  const tokenLimit = getConfig("tokenLimit") || maxTokens;
+
+  const estimatedTokens = estimateTokens(message);
+
+  if (estimatedTokens > tokenLimit) {
+    const proceed = await vscode.window.showWarningMessage(
+      `The generated message is estimated to be longer than ${tokenLimit} tokens (approximately ${estimatedTokens} tokens). This may result in a slower response or incomplete processing. Do you want to continue?`,
+      "Yes",
+      "No"
+    );
+    return proceed === "Yes";
+  }
+  return true;
+}
+
+// Add this helper function for token estimation
+function estimateTokens(text) {
+  // This is a simple approximation of GPT tokenization
+  // It's not perfect, but it's closer than just using string length
+  const words = text.split(/\s+/);
+  let tokenCount = 0;
+  for (const word of words) {
+    tokenCount += Math.ceil(word.length / 4); // Approximate 4 characters per token
+  }
+  return tokenCount;
+}
+
 function activate(context) {
   console.log("Commit Message Helper is now active!");
 
@@ -116,6 +145,13 @@ async function generateCommitMessage({ useTerminal = false }) {
       },
       async (progress) => {
         progress.report({ increment: 0 });
+
+        // Check message length before sending to API
+        const shouldProceed = await checkMessageLength(userMessage);
+        if (!shouldProceed) {
+          vscode.window.showInformationMessage("Operation cancelled by user.");
+          return;
+        }
 
         const message = await getMessage(api, userMessage);
         progress.report({ increment: 100 });

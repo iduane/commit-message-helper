@@ -63,6 +63,11 @@
           "type": "string",
           "default": "gpt-4o-mini",
           "description": "OpenAI model to use for generating commit messages"
+        },
+        "commitMessageHelper.tokenLimit": {
+          "type": "number",
+          "default": 8000,
+          "description": "Maximum number of tokens allowed in the commit message before asking for confirmation"
         }
       }
     }
