@@ -2,7 +2,7 @@
   "name": "commit-message-helper",
   "displayName": "Commit Message Helper",
   "description": "Generates commit messages using ChatGPT",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "publisher": "iduane",
   "icon": "LOGO.png",
   "license": "MIT",
@@ -63,6 +63,16 @@
           "type": "string",
           "default": "gpt-4o-mini",
           "description": "OpenAI model to use for generating commit messages"
+        },
+        "commitMessageHelper.tokenLimit": {
+          "type": "number",
+          "default": 8000,
+          "description": "Maximum number of tokens allowed in the commit message before asking for confirmation"
+        },
+        "commitMessageHelper.language": {
+          "type": "string",
+          "default": "en",
+          "description": "Language for the commit message"
         }
       }
     }

@@ -7,6 +7,8 @@ function getConfig(key) {
 }
 
 function loadPromptTemplate() {
+  const language = getConfig("language") || "en";
+
   let defaultTemplate = `As an AI assistant, analyze the following Git diff and generate a concise, informative commit message:
 
 {{diff}}
@@ -21,6 +23,15 @@ The <type> should be one of the following:
   - refactor: A code change that neither fixes a bug nor adds a feature
   - test: Adding missing tests or correcting existing tests
   - chore: Changes to the build process or auxiliary tools and libraries such as documentation generation
+
+The <scope> is optional and should be a short phrase describing the affected component (e.g., "parser", "login", etc.).
+${
+  language.startsWith("en")
+    ? ""
+    : "Translate the commit message to " +
+      language +
+      "and only send back the translated message"
+}.
 `;
 
   const customTemplatePath = getConfig("customPromptTemplatePath");

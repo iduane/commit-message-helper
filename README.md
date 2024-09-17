@@ -7,20 +7,19 @@ Commit Message Helper is a Visual Studio Code extension that generates commit me
 - Generates commit messages using OpenAI's GPT models
 - Customizable API settings
 - Keyboard shortcut for quick access
-
-## Installation
-
-1. Open Visual Studio Code
-2. Go to Extensions (Ctrl+Shift+X)
-3. Search for "Commit Message Helper"
-4. Click Install
+- Provides commit message templates
+- **Supports both Git and Subversion**
 
 ## Usage
 
-1. Open a project in VS Code
-2. Make changes to your files
-3. Use the keyboard shortcut Ctrl+Alt+C (Cmd+Alt+C on Mac) or run the "Generate Commit Message" command from the command palette
-4. The extension will generate a commit message based on your changes
+### Option 1:
+> In Source Control, click the **"Generate Commit Message"** button to create a commit message based on your changes.
+![via Source Control](./doc/source-control.png)
+
+### Option 2:
+> In the bottom bar, click the **"Commit Message Helper"** button. This will generate a commit message in a temporary file for you to review. Save the temporary file, and it will then generate the commit message in the terminal.
+![via Status Bar](./doc/status-bar.png)
+
 
 ## Configuration
 
@@ -30,19 +29,6 @@ You can configure the extension in your VS Code settings:
 - `commitMessageHelper.customPromptTemplatePath`: Path to a custom prompt template file
 - `commitMessageHelper.baseUrl`: Base URL for OpenAI API
 - `commitMessageHelper.model`: OpenAI model to use for generating commit messages
-
-## Development
-
-To set up the project for development:
-
-1. Clone the repository
-2. Run `npm install` to install dependencies
-3. Open the project in VS Code
-4. Press F5 to run the extension in a new Extension Development Host window
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
