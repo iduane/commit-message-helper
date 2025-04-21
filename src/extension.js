@@ -192,7 +192,15 @@ async function generateCommitMessage({ useTerminal = false }) {
   const { diff, vcs } = diffResult || {};
 
   if (!diffResult || !diff) {
-    vscode.window.showInformationMessage("No changes to commit.");
+    // In VS Code, information messages with no buttons will auto-hide after a short period
+    vscode.window.withProgress({
+      location: vscode.ProgressLocation.Notification,
+      title: "No changes to commit.",
+      cancellable: false
+    }, (progress) => {
+      // Return a promise that resolves after a short delay
+      return new Promise(resolve => setTimeout(resolve, 3000));
+    });
     return;
   }
 
@@ -243,17 +251,32 @@ async function generateCommitMessage({ useTerminal = false }) {
               const escapedMessage =
                 selectedMessageResult.editedMessage.replace(/"/g, '\\"');
 
-              // Use SVN command line to set the commit message
+              // Use SVN command line to set the commit message and execute it
               terminal.sendText(
                 vcs === "svn"
                   ? `svn commit -m"${escapedMessage}"`
                   : `git commit -m"${escapedMessage}"`,
-                false
+                true // Set to true to automatically execute the command
               );
 
-              vscode.window.showInformationMessage(
-                "SVN commit message set. Please review and commit manually in the terminal."
+              // Show information message and auto-dismiss after 3 seconds
+              const message = vscode.window.showInformationMessage(
+                vcs === "svn"
+                  ? "SVN commit executed."
+                  : "Git commit executed."
               );
+
+              // Close the message after 3 seconds
+              setTimeout(() => {
+                if (message) {
+                  message.dispose && message.dispose();
+                }
+              }, 3000);
+
+              // Close the terminal after giving the command time to execute
+              setTimeout(() => {
+                terminal.dispose();
+              }, 4000);
             }
           } else if (vcs === "git") {
             const gitExtension = vscode.extensions.getExtension("vscode.git");
